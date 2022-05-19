@@ -1,3 +1,15 @@
+
+import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.util.Vector;
+import javax.swing.table.DefaultTableModel;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -13,6 +25,7 @@ public class E_HealthCare_GUI extends javax.swing.JFrame {
      * Creates new form E_HealthCare_GUI
      */
     public E_HealthCare_GUI() {
+        
         initComponents();
     }
 
@@ -88,20 +101,17 @@ public class E_HealthCare_GUI extends javax.swing.JFrame {
             }
         });
 
-        jTextField1.setText("jTextField1");
+        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField2ActionPerformed(evt);
+            }
+        });
 
-        jTextField2.setText("jTextField1");
-
-        jTextField3.setText("jTextField1");
         jTextField3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField3ActionPerformed(evt);
             }
         });
-
-        jTextField4.setText("jTextField1");
-
-        jTextField5.setText("jTextField1");
 
         jPanel3.setBackground(new java.awt.Color(0, 204, 204));
 
@@ -246,17 +256,87 @@ public class E_HealthCare_GUI extends javax.swing.JFrame {
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField3ActionPerformed
+    
+    Connection con; 
+    //PreparedStatement pat;
+    Statement stmt; 
+    DefaultTableModel ds;
 
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        try {
+            String name, experience, speciality, ID, mobile;
+            name = jTextField1.getText();
+            ID = jTextField2.getText();
+            experience = jTextField3.getText();
+            speciality = jTextField5.getText();
+            mobile = jTextField4.getText();
+//            pat = con.prepareStatement("insert into healthCare(name,ID,experience,speciality,mobile) values(?,?,?,?,?)");
+//            pat.setString(1,name);
+//            pat.setString(2,ID);
+//            pat.setString(3,experience);
+//            pat.setString(4,speciality);
+//            pat.setString(5,mobile);
+//            pat.executeUpdate();
+
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/healthCare","root","");
+            Statement stmt = con.createStatement();
+            int i=stmt.executeUpdate("insert into healthCare(name,ID,experience,speciality,mobile) values('"+name+"','"+ID+"','"+experience+"','"+speciality+"','"+mobile+"')");
+            if(i>0)
+            {
+                JOptionPane.showMessageDialog(null,"Doctor is created successfully");
+            }
+            else
+            {
+               JOptionPane.showMessageDialog(null,"Error");
+            }
+            
+            jTextField1.setText("");
+            jTextField2.setText("");
+            jTextField3.setText("");
+            jTextField4.setText("");
+            jTextField5.setText("");
+            jTextField1.requestFocus();
+            
+            ResultSet j;
+            j = stmt.executeQuery("select * from healthCare");
+            
+            ResultSetMetaData jd = j.getMetaData();
+            int c = jd.getColumnCount();
+            
+            ds=(DefaultTableModel)jTable2.getModel();
+            ds.setRowCount(0);
+            while(j.next())
+            {
+                Vector v=new Vector();
+                for(int a=1;a<=c;a++)
+                {
+                    v.add(j.getString("Name"));
+                    v.add(j.getString("ID"));
+                    v.add(j.getString("Experience"));
+                    v.add(j.getString("Speciality"));
+                    v.add(j.getString("Mobile"));
+                }
+                ds.addRow(v);
+            }
+        } 
+        catch (Exception e) {
+           JOptionPane.showMessageDialog(null,"Error:"+e);
+                   }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        System.exit(0);
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField2ActionPerformed
+
     /**
-     * @param args the command line arguments
+     * @param args the command line argument
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
